@@ -1,1 +1,1 @@
-# radar-siem-rules
+# qradar-siem-rules
