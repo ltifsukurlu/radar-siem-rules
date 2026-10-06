@@ -1,0 +1,14 @@
+{
+  "name": "SOC-007: Lateral Movement Detected",
+  "description": "Detects lateral movement including SSH hopping between servers and remote service exploitation.",
+  "enabled": true,
+  "severity": 8,
+  "type": "EVENT",
+  "rule_type": "AQL",
+  "aql_expression": "SELECT QIDNAME(qid) as EventName, sourceIP, destinationIP, username, LOGSOURCENAME(logsourceid) as LogSource, payload, starttime FROM events WHERE LOGSOURCENAME(logsourceid) ILIKE '%LinuxServer%' AND (payload ILIKE '%StrictHostKeyChecking%' OR (payload ILIKE '%scp%' AND payload ILIKE '%root@%') OR (payload ILIKE '%ssh%' AND payload ILIKE '%192.168.%')) ORDER BY starttime DESC LAST 300 SECONDS",
+  "tags": [
+    "attack.lateral_movement",
+    "attack.t1021",
+    "attack.t1570"
+  ]
+}
