@@ -1,0 +1,14 @@
+{
+  "name": "SOC-009: Data Exfiltration Detected",
+  "description": "Detects data exfiltration attempts including large file transfers and upload to external services.",
+  "enabled": true,
+  "severity": 10,
+  "type": "EVENT",
+  "rule_type": "AQL",
+  "aql_expression": "SELECT QIDNAME(qid) as EventName, sourceIP, destinationIP, username, LOGSOURCENAME(logsourceid) as LogSource, payload, starttime FROM events WHERE LOGSOURCENAME(logsourceid) ILIKE '%LinuxServer%' AND (payload ILIKE '%rsync%' OR payload ILIKE '%scp%' OR (payload ILIKE '%curl%' AND payload ILIKE '%http%') OR payload ILIKE '%--remove-source-files%') ORDER BY starttime DESC LAST 300 SECONDS",
+  "tags": [
+    "attack.exfiltration",
+    "attack.t1048",
+    "attack.t1041"
+  ]
+}
