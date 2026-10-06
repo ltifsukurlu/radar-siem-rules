@@ -1,0 +1,14 @@
+{
+  "name": "SOC-008: Discovery Activity Detected",
+  "description": "Detects reconnaissance and discovery activity including network scanning and user enumeration.",
+  "enabled": true,
+  "severity": 5,
+  "type": "EVENT",
+  "rule_type": "AQL",
+  "aql_expression": "SELECT QIDNAME(qid) as EventName, sourceIP, destinationIP, username, LOGSOURCENAME(logsourceid) as LogSource, payload, starttime FROM events WHERE LOGSOURCENAME(logsourceid) ILIKE '%LinuxServer%' AND (payload ILIKE '%nmap%' OR payload ILIKE '%netstat%' OR payload ILIKE '%/etc/passwd%' OR payload ILIKE '%ifconfig%') ORDER BY starttime DESC LAST 300 SECONDS",
+  "tags": [
+    "attack.discovery",
+    "attack.t1046",
+    "attack.t1082"
+  ]
+}
