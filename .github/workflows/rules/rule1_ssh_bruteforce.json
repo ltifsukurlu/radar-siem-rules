@@ -1,9 +1,0 @@
-{
-  "name": "GitHub_Rule_1_SSH_BruteForce_Detection",
-  "description": "Detects multiple failed SSH login attempts from a single source IP",
-  "enabled": true,
-  "severity": 7,
-  "type": "EVENT",
-  "rule_type": "AQL",
-  "aql_expression": "SELECT UTF8(payload) AS EventPayload, sourceip, username, COUNT(*) AS FailedCount FROM events WHERE qid = 10001 GROUP BY sourceip HAVING FailedCount > 5"
-}
