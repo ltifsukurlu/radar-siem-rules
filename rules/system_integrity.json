@@ -1,0 +1,14 @@
+{
+  "name": "SOC-010: System Integrity Violation",
+  "description": "Detects system integrity violations including kernel module loading and rootkit installation indicators.",
+  "enabled": true,
+  "severity": 10,
+  "type": "EVENT",
+  "rule_type": "AQL",
+  "aql_expression": "SELECT QIDNAME(qid) as EventName, sourceIP, destinationIP, username, LOGSOURCENAME(logsourceid) as LogSource, payload, starttime FROM events WHERE LOGSOURCENAME(logsourceid) ILIKE '%LinuxServer%' AND (payload ILIKE '%insmod%' OR payload ILIKE '%modprobe%' OR payload ILIKE '%/boot/grub%' OR payload ILIKE '%/lib/modules%') ORDER BY starttime DESC LAST 300 SECONDS",
+  "tags": [
+    "attack.defense_evasion",
+    "attack.t1014",
+    "attack.t1542"
+  ]
+}
