@@ -33,7 +33,7 @@ for file_path in rule_files:
             rule_data = json.load(f)
         
         # QRadar Custom Rules API Endpoint
-        url = f"https://{QRADAR_HOST}/api/analytics/rules"
+        url = f"https://{QRADAR_HOST}/api/analytics/custom_rules"
         
         response = requests.post(url, headers=headers, json=rule_data, verify=False, timeout=15)
         
