@@ -1,45 +1,55 @@
-import os
-import glob
-import json
-import requests
-import urllib3
+def run_aql_search(aql_template):
+    aql = build_aql(aql_template)
+    print(f"   AQL gonderilir...")
+    print(f"   {aql[:150]}...")
 
-# Self-signed SSL sertifikat xəbərdarlığını söndürürük
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    # URL-ə query parameter kimi əlavə edirik və https:// qeyd edirik
+    url = f"https://{QRADAR_HOST}/api/ariel/searches"
+    
+    params = {
+        'query_expression': aql
+    }
 
-QRADAR_HOST = os.environ.get("QRADAR_HOST")
-SEC_TOKEN = os.environ.get("QRADAR_SEC_TOKEN")
+    r = requests.post(
+        url,
+        headers=HEADERS,
+        params=params, # query parameter olaraq gedir
+        verify=False
+    )
 
-if not QRADAR_HOST or not SEC_TOKEN:
-    print("[!] Xəta: QRADAR_HOST və ya QRADAR_SEC_TOKEN tapılmadı!")
-    exit(1)
+    if r.status_code not in [200, 201]:
+        print(f"   XETA: HTTP {r.status_code}")
+        print(f"   {r.text[:300]}")
+        return None
 
-headers = {
-    'SEC': SEC_TOKEN,
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'Version': '12.0'
-}
+    search_id = r.json().get('search_id')
+    print(f"   Search ID: {search_id}")
 
-# rules/ qovluğundakı bütün .json fayllarını oxuyuruq
-rule_files = glob.glob('rules/*.json')
+    for i in range(20):
+        time.sleep(3)
+        sr = requests.get(
+            f'https://{QRADAR_HOST}/api/ariel/searches/{search_id}',
+            headers=HEADERS,
+            verify=False
+        )
+        status = sr.json().get('status')
+        print(f"   Status [{i+1}]: {status}")
+        if status == 'COMPLETED':
+            break
+        elif status == 'ERROR':
+            print("   XETA: AQL icra xetasi")
+            return None
 
-print(f"[*] Cəmi {len(rule_files)} QRadar rule faylı tapıldı.")
+    rr = requests.get(
+        f'https://{QRADAR_HOST}/api/ariel/searches/{search_id}/results',
+        headers=HEADERS,
+        verify=False
+    )
 
-for file_path in rule_files:
-    print(f"[*] İşlənilir: {file_path}")
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            rule_data = json.load(f)
-        
-        # QRadar Custom Rules API Endpoint
-        url = f"https://{QRADAR_HOST}/api/analytics/custom_rules"
-        
-        response = requests.post(url, headers=headers, json=rule_data, verify=False, timeout=15)
-        
-        if response.status_code in [200, 201]:
-            print(f"[+] {file_path} uğurla QRadar-a yükləndi.")
-        else:
-            print(f"[-] {file_path} yüklənərkən xəta oldu! Status Code: {response.status_code}, Response: {response.text}")
-    except Exception as e:
-        print(f"[!] Xəta baş verdi ({file_path}): {str(e)}")
+    if rr.status_code == 200:
+        events = rr.json().get('events', [])
+        print(f"   {len(events)} event tapildi")
+        return events
+
+    print(f"   XETA: Neticeler alinmadi HTTP {rr.status_code}")
+    return None
