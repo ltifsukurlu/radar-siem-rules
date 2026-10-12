@@ -11,6 +11,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      PYTHONUNBUFFERED: "1"   # <-- Bunu bura əlavə et ki, xətalar dərhal loqda görünsün
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
