@@ -17,7 +17,8 @@ if not QRADAR_HOST or not SEC_TOKEN:
 headers = {
     'SEC': SEC_TOKEN,
     'Content-Type': 'application/json',
-    'Accept': 'application/json'
+    'Accept': 'application/json',
+    'Version': '12.0'
 }
 
 # rules/ qovluğundakı bütün .json fayllarını oxuyuruq
