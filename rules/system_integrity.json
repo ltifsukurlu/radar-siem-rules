@@ -1,14 +1,15 @@
 {
-  "name": "SOC-010: System Integrity Violation",
-  "description": "Detects system integrity violations including kernel module loading and rootkit installation indicators.",
+  "name": "SOC-010: Windows System Integrity Violation",
+  "description": "Detects Windows system integrity violations including kernel driver installation (BYOVD), Boot Configuration Data (BCD) tampering, and driver signing enforcement disabling.",
   "enabled": true,
   "severity": 10,
   "type": "EVENT",
   "rule_type": "AQL",
-  "aql_expression": "SELECT QIDNAME(qid) as EventName, sourceIP, destinationIP, username, LOGSOURCENAME(logsourceid) as LogSource, payload, starttime FROM events WHERE LOGSOURCENAME(logsourceid) ILIKE '%LinuxServer%' AND (payload ILIKE '%insmod%' OR payload ILIKE '%modprobe%' OR payload ILIKE '%/boot/grub%' OR payload ILIKE '%/lib/modules%') ORDER BY starttime DESC LAST 300 SECONDS",
+  "aql_expression": "SELECT QIDNAME(qid) as EventName, sourceIP, destinationIP, username, LOGSOURCENAME(logsourceid) as LogSource, payload, starttime FROM events WHERE LOGSOURCENAME(logsourceid) ILIKE '%Windows%' AND (payload ILIKE '%bcdedit%/set%' OR payload ILIKE '%testsigning%' OR payload ILIKE '%nointegritychecks%' OR payload ILIKE '%sc%create%type=%kernel%' OR payload ILIKE '%fltmc%load%') ORDER BY starttime DESC LAST 300 SECONDS",
   "tags": [
     "attack.defense_evasion",
     "attack.t1014",
-    "attack.t1542"
+    "attack.t1542.003",
+    "attack.t1068"
   ]
 }
