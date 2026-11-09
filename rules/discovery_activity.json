@@ -1,14 +1,15 @@
 {
-  "name": "SOC-008: Discovery Activity Detected",
-  "description": "Detects reconnaissance and discovery activity including network scanning and user enumeration.",
+  "name": "SOC-008: Windows Discovery Activity Detected",
+  "description": "Detects reconnaissance and discovery activity on Windows including network scanning, user/group enumeration, and system information gathering.",
   "enabled": true,
   "severity": 5,
   "type": "EVENT",
   "rule_type": "AQL",
-  "aql_expression": "SELECT QIDNAME(qid) as EventName, sourceIP, destinationIP, username, LOGSOURCENAME(logsourceid) as LogSource, payload, starttime FROM events WHERE LOGSOURCENAME(logsourceid) ILIKE '%LinuxServer%' AND (payload ILIKE '%nmap%' OR payload ILIKE '%netstat%' OR payload ILIKE '%/etc/passwd%' OR payload ILIKE '%ifconfig%') ORDER BY starttime DESC LAST 300 SECONDS",
+  "aql_expression": "SELECT QIDNAME(qid) as EventName, sourceIP, destinationIP, username, LOGSOURCENAME(logsourceid) as LogSource, payload, starttime FROM events WHERE LOGSOURCENAME(logsourceid) ILIKE '%Windows%' AND (payload ILIKE '%net user%' OR payload ILIKE '%net group%' OR payload ILIKE '%net localgroup%' OR payload ILIKE '%systeminfo%' OR payload ILIKE '%ipconfig%/all%' OR payload ILIKE '%nltest%' OR payload ILIKE '%whoami%/all%') ORDER BY starttime DESC LAST 300 SECONDS",
   "tags": [
     "attack.discovery",
-    "attack.t1046",
-    "attack.t1082"
+    "attack.t1087",
+    "attack.t1082",
+    "attack.t1016"
   ]
 }
