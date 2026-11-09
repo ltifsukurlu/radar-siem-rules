@@ -1,14 +1,16 @@
 {
-  "name": "SOC-007: Lateral Movement Detected",
-  "description": "Detects lateral movement including SSH hopping between servers and remote service exploitation.",
+  "name": "SOC-007: Windows Lateral Movement Detected",
+  "description": "Detects Windows lateral movement attempts including PsExec execution, WMI remote process creation, PowerShell Remoting, and WinRM usage.",
   "enabled": true,
   "severity": 8,
   "type": "EVENT",
   "rule_type": "AQL",
-  "aql_expression": "SELECT QIDNAME(qid) as EventName, sourceIP, destinationIP, username, LOGSOURCENAME(logsourceid) as LogSource, payload, starttime FROM events WHERE LOGSOURCENAME(logsourceid) ILIKE '%LinuxServer%' AND (payload ILIKE '%StrictHostKeyChecking%' OR (payload ILIKE '%scp%' AND payload ILIKE '%root@%') OR (payload ILIKE '%ssh%' AND payload ILIKE '%192.168.%')) ORDER BY starttime DESC LAST 300 SECONDS",
+  "aql_expression": "SELECT QIDNAME(qid) as EventName, sourceIP, destinationIP, username, LOGSOURCENAME(logsourceid) as LogSource, payload, starttime FROM events WHERE LOGSOURCENAME(logsourceid) ILIKE '%Windows%' AND (payload ILIKE '%psexec%' OR payload ILIKE '%paexec%' OR payload ILIKE '%wmic%/node:%' OR payload ILIKE '%Enter-PSSession%' OR payload ILIKE '%Invoke-Command%' OR payload ILIKE '%winrs%-r:%') ORDER BY starttime DESC LAST 300 SECONDS",
   "tags": [
     "attack.lateral_movement",
     "attack.t1021",
-    "attack.t1570"
+    "attack.t1021.001",
+    "attack.t1021.002",
+    "attack.t1047"
   ]
 }
