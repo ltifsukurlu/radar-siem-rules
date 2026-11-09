@@ -1,14 +1,15 @@
 {
-  "name": "SOC-005: Malicious Code Execution",
-  "description": "Detects malicious code execution patterns including base64 encoded commands and reverse shells.",
+  "name": "SOC-005: Windows Malicious Code Execution",
+  "description": "Detects malicious code execution on Windows including Encoded PowerShell commands, hidden execution flags, LOLBin exploitation (mshta, regsvr32), and TCP socket connections.",
   "enabled": true,
   "severity": 10,
   "type": "EVENT",
   "rule_type": "AQL",
-  "aql_expression": "SELECT QIDNAME(qid) as EventName, sourceIP, destinationIP, username, LOGSOURCENAME(logsourceid) as LogSource, payload, starttime FROM events WHERE LOGSOURCENAME(logsourceid) ILIKE '%LinuxServer%' AND (payload ILIKE '%base64%' OR payload ILIKE '%/dev/tcp%' OR payload ILIKE '%mkfifo%' OR payload ILIKE '%0>&1%') ORDER BY starttime DESC LAST 300 SECONDS",
+  "aql_expression": "SELECT QIDNAME(qid) as EventName, sourceIP, destinationIP, username, LOGSOURCENAME(logsourceid) as LogSource, payload, starttime FROM events WHERE LOGSOURCENAME(logsourceid) ILIKE '%Windows%' AND (payload ILIKE '%-EncodedCommand%' OR payload ILIKE '%-enc%' OR payload ILIKE '%Bypass%-WindowStyle%Hidden%' OR payload ILIKE '%mshta.exe%' OR payload ILIKE '%regsvr32%/s%/u%' OR payload ILIKE '%Net.Sockets.TCPClient%') ORDER BY starttime DESC LAST 300 SECONDS",
   "tags": [
     "attack.execution",
-    "attack.t1059.004",
-    "attack.t1620"
+    "attack.t1059.001",
+    "attack.t1218",
+    "attack.t1027"
   ]
 }
