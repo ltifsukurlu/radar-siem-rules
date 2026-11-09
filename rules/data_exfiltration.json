@@ -1,14 +1,15 @@
 {
-  "name": "SOC-009: Data Exfiltration Detected",
-  "description": "Detects data exfiltration attempts including large file transfers and upload to external services.",
+  "name": "SOC-009: Windows Data Exfiltration Detected",
+  "description": "Detects data exfiltration attempts on Windows including PowerShell upload cmdlets, certutil abuse, BITS transfers, and external archiving/sync tools.",
   "enabled": true,
   "severity": 10,
   "type": "EVENT",
   "rule_type": "AQL",
-  "aql_expression": "SELECT QIDNAME(qid) as EventName, sourceIP, destinationIP, username, LOGSOURCENAME(logsourceid) as LogSource, payload, starttime FROM events WHERE LOGSOURCENAME(logsourceid) ILIKE '%LinuxServer%' AND (payload ILIKE '%rsync%' OR payload ILIKE '%scp%' OR (payload ILIKE '%curl%' AND payload ILIKE '%http%') OR payload ILIKE '%--remove-source-files%') ORDER BY starttime DESC LAST 300 SECONDS",
+  "aql_expression": "SELECT QIDNAME(qid) as EventName, sourceIP, destinationIP, username, LOGSOURCENAME(logsourceid) as LogSource, payload, starttime FROM events WHERE LOGSOURCENAME(logsourceid) ILIKE '%Windows%' AND (payload ILIKE '%Invoke-WebRequest%' OR payload ILIKE '%System.Net.WebClient%' OR payload ILIKE '%Start-BitsTransfer%' OR payload ILIKE '%certutil%-encode%' OR payload ILIKE '%bitsadmin%/transfer%' OR payload ILIKE '%rclone%' OR payload ILIKE '%mega-cmd%') ORDER BY starttime DESC LAST 300 SECONDS",
   "tags": [
     "attack.exfiltration",
     "attack.t1048",
-    "attack.t1041"
+    "attack.t1041",
+    "attack.t1567"
   ]
 }
