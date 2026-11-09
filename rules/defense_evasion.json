@@ -1,14 +1,15 @@
 {
-  "name": "SOC-004: Defense Evasion Detected",
-  "description": "Detects defense evasion techniques including log deletion, audit daemon tampering and history file clearing.",
+  "name": "SOC-004: Windows Defense Evasion Detected",
+  "description": "Detects Windows defense evasion techniques including Event Log clearing, Windows Defender disabling, Shadow Copy deletion, and Audit Policy tampering.",
   "enabled": true,
   "severity": 10,
   "type": "EVENT",
   "rule_type": "AQL",
-  "aql_expression": "SELECT QIDNAME(qid) as EventName, sourceIP, destinationIP, username, LOGSOURCENAME(logsourceid) as LogSource, payload, starttime FROM events WHERE LOGSOURCENAME(logsourceid) ILIKE '%LinuxServer%' AND (payload ILIKE '%/var/log%' OR payload ILIKE '%auditd%' OR payload ILIKE '%history -c%' OR payload ILIKE '%rsyslog%') ORDER BY starttime DESC LAST 300 SECONDS",
+  "aql_expression": "SELECT QIDNAME(qid) as EventName, sourceIP, destinationIP, username, LOGSOURCENAME(logsourceid) as LogSource, payload, starttime FROM events WHERE LOGSOURCENAME(logsourceid) ILIKE '%Windows%' AND (payload ILIKE '%wevtutil%cl%' OR payload ILIKE '%Clear-EventLog%' OR payload ILIKE '%DisableRealtimeMonitoring%' OR payload ILIKE '%vssadmin%delete%shadows%' OR payload ILIKE '%wmic%shadowcopy%delete%' OR payload ILIKE '%auditpol%/clear%') ORDER BY starttime DESC LAST 300 SECONDS",
   "tags": [
     "attack.defense_evasion",
     "attack.t1070",
-    "attack.t1562"
+    "attack.t1070.001",
+    "attack.t1562.001"
   ]
 }
