@@ -1,14 +1,15 @@
 {
-  "name": "SOC-003: Persistence Mechanism Detected",
-  "description": "Detects persistence mechanisms including cron job creation, systemd service installation and SSH authorized_keys modification.",
+  "name": "SOC-003: Windows Persistence Mechanism Detected",
+  "description": "Detects Windows persistence mechanisms including Scheduled Task creation (schtasks), Windows Service installation (sc create), and Registry Run key modifications.",
   "enabled": true,
   "severity": 8,
   "type": "EVENT",
   "rule_type": "AQL",
-  "aql_expression": "SELECT QIDNAME(qid) as EventName, sourceIP, destinationIP, username, LOGSOURCENAME(logsourceid) as LogSource, payload, starttime FROM events WHERE LOGSOURCENAME(logsourceid) ILIKE '%LinuxServer%' AND (payload ILIKE '%/etc/cron%' OR payload ILIKE '%authorized_keys%' OR payload ILIKE '%/etc/systemd/system%' OR payload ILIKE '%/etc/rc.local%') ORDER BY starttime DESC LAST 300 SECONDS",
+  "aql_expression": "SELECT QIDNAME(qid) as EventName, sourceIP, destinationIP, username, LOGSOURCENAME(logsourceid) as LogSource, payload, starttime FROM events WHERE LOGSOURCENAME(logsourceid) ILIKE '%Windows%' AND (payload ILIKE '%schtasks%/create%' OR payload ILIKE '%Register-ScheduledTask%' OR payload ILIKE '%sc%create%' OR payload ILIKE '%New-Service%' OR payload ILIKE '%CurrentVersion\\Run%') ORDER BY starttime DESC LAST 300 SECONDS",
   "tags": [
     "attack.persistence",
-    "attack.t1053",
-    "attack.t1543"
+    "attack.t1053.005",
+    "attack.t1543.003",
+    "attack.t1547.001"
   ]
 }
